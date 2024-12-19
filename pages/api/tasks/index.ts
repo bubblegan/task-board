@@ -1,9 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { taskSchema } from "@/lib/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { title, description, boardId } = req.body;
+    const validation = taskSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ errors: validation.error.errors });
+    }
+    const { title, description, boardId } = validation.data;
+
     try {
       const totalOnBoard = await prisma.task.count({
         where: {

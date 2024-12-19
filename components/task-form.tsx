@@ -68,6 +68,11 @@ export function TaskForm() {
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setValue({ task: undefined, isOpen: false });
     },
+    onError: () => {
+      toast({
+        description: "Failed to create task",
+      });
+    },
   });
 
   const updateTask = useMutation({
@@ -78,6 +83,11 @@ export function TaskForm() {
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setValue({ task: undefined, isOpen: false });
+    },
+    onError: () => {
+      toast({
+        description: "Failed to update task",
+      });
     },
   });
 
@@ -90,6 +100,11 @@ export function TaskForm() {
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setConfirmationDialog({ isOpen: false });
       setValue({ task: undefined, isOpen: false });
+    },
+    onError: () => {
+      toast({
+        description: "Failed to delete task",
+      });
     },
   });
 

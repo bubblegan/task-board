@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { truncateText } from "@/lib/truncate-text";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cva } from "class-variance-authority";
@@ -75,12 +76,14 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}>
       <CardHeader className="px-3 py-3 justify-between flex flex-row items-center border-b-2 border-secondary relative w-full">
-        {task.title}
+        {truncateText(task.title, 30)}
         <Button {...attributes} {...listeners} variant="ghost" size="icon">
           <Grip />
         </Button>
       </CardHeader>
-      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">{task.description}</CardContent>
+      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
+        {truncateText(task.description, 500)}
+      </CardContent>
     </Card>
   );
 }

@@ -63,6 +63,11 @@ export function BoardList() {
         description: "Task moved",
       });
     },
+    onError: () => {
+      toast({
+        description: "Failed to move task",
+      });
+    },
   });
 
   const moveBoard = useMutation({
@@ -70,6 +75,11 @@ export function BoardList() {
     onSuccess: () => {
       toast({
         description: "Board moved",
+      });
+    },
+    onError: () => {
+      toast({
+        description: "Failed to move board",
       });
     },
   });

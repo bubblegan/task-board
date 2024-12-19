@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
 export function BoardContainer({ children }: { children: React.ReactNode }) {
   const dndContext = useDndContext();
 
-  const variations = cva("px-2 md:px-0 flex lg:justify-center pb-4", {
+  const variations = cva("px-0 flex lg:justify-center pb-4", {
     variants: {
       dragging: {
         default: "snap-x snap-mandatory",
@@ -19,7 +19,7 @@ export function BoardContainer({ children }: { children: React.ReactNode }) {
       className={variations({
         dragging: dndContext.active ? "active" : "default",
       })}>
-      <div className="flex gap-4 items-center flex-row justify-center">{children}</div>
+      <div className="flex gap-4 md:flex-row flex-col">{children}</div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );

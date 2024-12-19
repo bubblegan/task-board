@@ -10,6 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { sortBoardApi } from "@/lib/query-fn";
+import { truncateText } from "@/lib/truncate-text";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -67,7 +68,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
   };
 
   const variants = cva(
-    "h-[500px] max-h-[500px] w-[350px] max-w-full bg-primary-foreground flex flex-col flex-shrink-0 snap-center",
+    "h-[500px] max-h-[500px] md:w-[350px] w-full max-w-full bg-primary-foreground flex flex-col flex-shrink-0 snap-center",
     {
       variants: {
         dragging: {
@@ -87,6 +88,11 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
     },
+    onError: () => {
+      toast({
+        description: "Failed to sort board",
+      });
+    },
   });
 
   return (
@@ -97,15 +103,11 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}>
       <CardHeader className="p-2 font-semibold border-b-2 flex flex-row justify-between items-center">
-        <Button
-          variant={"ghost"}
-          {...attributes}
-          {...listeners}
-          className=" p-1 text-primary/50 h-auto cursor-grab">
+        <Button variant={"ghost"} {...attributes} {...listeners} className="cursor-grab" size={"icon"}>
           <span className="sr-only">{`Move column: ${column.title}`}</span>
           <Grip />
         </Button>
-        <p
+        <span
           onClick={() =>
             setValue({
               isOpen: true,
@@ -113,8 +115,8 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
             })
           }
           className="cursor-pointer">
-          {column.title}
-        </p>
+          {truncateText(column.title, 20)}
+        </span>
         <div className="flex flex-row">
           <Button
             onClick={() => {

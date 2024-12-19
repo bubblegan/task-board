@@ -7,7 +7,6 @@ export type BoardWithTasks = Prisma.BoardGetPayload<{
   };
 }>;
 
-
 export const boardSchema = z.object({
   title: z
     .string()
@@ -26,7 +25,7 @@ export const taskSchema = z.object({
   description: z
     .string()
     .trim()
-    .min(1, { message: "please fill in the title" })
+    .min(1, { message: "please fill in the description" })
     .max(3000, { message: "max length is 3000 characters" }),
   boardId: z.number(),
   id: z.number().optional(),

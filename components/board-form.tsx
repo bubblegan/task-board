@@ -48,6 +48,11 @@ export function BoardForm() {
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setValue({ board: undefined, isOpen: false });
     },
+    onError: () => {
+      toast({
+        description: "Failed to create board",
+      });
+    },
   });
 
   const updateBoard = useMutation({
@@ -58,6 +63,11 @@ export function BoardForm() {
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setValue({ board: undefined, isOpen: false });
+    },
+    onError: () => {
+      toast({
+        description: "Failed to update board",
+      });
     },
   });
 
@@ -70,6 +80,11 @@ export function BoardForm() {
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setConfirmationDialog({ isOpen: false });
       setValue({ board: undefined, isOpen: false });
+    },
+    onError: () => {
+      toast({
+        description: "Failed to delete board",
+      });
     },
   });
 
