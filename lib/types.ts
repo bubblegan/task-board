@@ -7,6 +7,7 @@ export type BoardWithTasks = Prisma.BoardGetPayload<{
   };
 }>;
 
+
 export const boardSchema = z.object({
   title: z
     .string()
