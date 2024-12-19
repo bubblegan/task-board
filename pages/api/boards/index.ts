@@ -2,6 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const result = await prisma.$queryRaw`SELECT 1`;
+  console.log(result);
+
   if (req.method === "GET") {
     try {
       const board = await prisma.board.findMany({
