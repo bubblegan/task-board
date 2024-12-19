@@ -1,11 +1,11 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cva } from "class-variance-authority";
-import { Button } from "@/components/ui/button";
+import { useAtom } from "jotai";
 import { Grip } from "lucide-react";
 import { TaskFormAtom } from "./task-form";
-import { useAtom } from "jotai";
 
 export interface Task {
   id: string;
@@ -29,14 +29,7 @@ export interface TaskDragData {
 }
 
 export function TaskCard({ task, isOverlay }: TaskCardProps) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: {
       type: "Task",
@@ -80,17 +73,14 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       }
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
-      })}
-    >
+      })}>
       <CardHeader className="px-3 py-3 justify-between flex flex-row items-center border-b-2 border-secondary relative w-full">
         {task.title}
         <Button {...attributes} {...listeners} variant="ghost" size="icon">
           <Grip />
         </Button>
       </CardHeader>
-      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
-        {task.description}
-      </CardContent>
+      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">{task.description}</CardContent>
     </Card>
   );
 }

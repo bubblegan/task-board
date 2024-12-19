@@ -92,11 +92,7 @@ export async function deleteTaskApi(data: { id: number }) {
   });
 }
 
-export async function moveTaskApi(data: {
-  taskId: number;
-  boardId: number;
-  toPos: number;
-}) {
+export async function moveTaskApi(data: { taskId: number; boardId: number; toPos: number }) {
   return fetch(`/api/tasks/${data.taskId}/move`, {
     method: "PATCH",
     headers: {

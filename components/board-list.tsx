@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { BoardContainer } from "./board-container";
+import { useToast } from "@/hooks/use-toast";
+import { fetchBoardData, moveBoardApi, moveTaskApi } from "@/lib/query-fn";
 import {
   DndContext,
   type DragEndEvent,
@@ -13,13 +12,14 @@ import {
   TouchSensor,
   MouseSensor,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import { type Task, TaskCard } from "./task-card";
 import { Active, DataRef, Over } from "@dnd-kit/core";
-import { TaskDragData } from "./task-card";
-import { fetchBoardData, moveBoardApi, moveTaskApi } from "@/lib/query-fn";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createPortal } from "react-dom";
 import { BoardColumn, Column, ColumnDragData } from "./board-column";
-import { useToast } from "@/hooks/use-toast";
+import { BoardContainer } from "./board-container";
+import { type Task, TaskCard } from "./task-card";
+import { TaskDragData } from "./task-card";
 
 type DraggableData = ColumnDragData | TaskDragData;
 
@@ -49,7 +49,6 @@ export function BoardList() {
 
   const { toast } = useToast();
 
-  // get list from API
   const [columns, setColumns] = useState<Column[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
@@ -126,7 +125,7 @@ export function BoardList() {
     }
   }
 
-  async function onDragEnd(event: DragEndEvent) {
+  function onDragEnd(event: DragEndEvent) {
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -143,9 +142,7 @@ export function BoardList() {
     const isTaskColumn = activeData?.type === "Task";
 
     if (isTaskColumn) {
-      const board_id = columns.find(
-        (col) => col.id === activeData?.task.columnId
-      )?.boardId;
+      const board_id = columns.find((col) => col.id === activeData?.task.columnId)?.boardId;
 
       if (board_id !== undefined) {
         moveTask.mutate({
@@ -205,11 +202,7 @@ export function BoardList() {
         const overIndex = tasks.findIndex((t) => t.id === overId);
         const activeTask = tasks[activeIndex];
         const overTask = tasks[overIndex];
-        if (
-          activeTask &&
-          overTask &&
-          activeTask.columnId !== overTask.columnId
-        ) {
+        if (activeTask && overTask && activeTask.columnId !== overTask.columnId) {
           activeTask.columnId = overTask.columnId;
           return arrayMove(tasks, activeIndex, overIndex - 1);
         }
@@ -234,20 +227,11 @@ export function BoardList() {
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-    >
+    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragOver={onDragOver}>
       <BoardContainer>
         <SortableContext items={columnsId}>
           {columns.map((col) => (
-            <BoardColumn
-              key={col.id}
-              column={col}
-              tasks={tasks.filter((task) => task.columnId === col.id)}
-            />
+            <BoardColumn key={col.id} column={col} tasks={tasks.filter((task) => task.columnId === col.id)} />
           ))}
         </SortableContext>
       </BoardContainer>
@@ -259,9 +243,7 @@ export function BoardList() {
               <BoardColumn
                 isOverlay
                 column={activeColumn}
-                tasks={tasks.filter(
-                  (task) => task.columnId === activeColumn.id
-                )}
+                tasks={tasks.filter((task) => task.columnId === activeColumn.id)}
               />
             )}
             {activeTask && <TaskCard task={activeTask} isOverlay />}

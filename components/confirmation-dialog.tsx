@@ -41,13 +41,10 @@ export function ConfirmationDialog() {
                 message: "",
                 onConfirm: () => null,
               })
-            }
-          >
+            }>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction onClick={value.onConfirm}>
-            Confirm
-          </AlertDialogAction>
+          <AlertDialogAction onClick={value.onConfirm}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

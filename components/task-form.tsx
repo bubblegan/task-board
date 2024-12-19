@@ -1,42 +1,19 @@
-import { Button } from "@/components/ui/button";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  createTaskApi,
-  deleteTaskApi,
-  fetchBoardData,
-  updateTaskApi,
-} from "@/lib/query-fn";
 import { useEffect, useMemo } from "react";
-import { atom, useAtom } from "jotai";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { ConfirmationDialogAtom } from "./confirmation-dialog";
-import { z } from "zod";
+import { createTaskApi, deleteTaskApi, fetchBoardData, updateTaskApi } from "@/lib/query-fn";
 import { TaskInput, taskSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { atom, useAtom } from "jotai";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { ConfirmationDialogAtom } from "./confirmation-dialog";
 
 export const TaskFormAtom = atom<{
   isOpen: boolean;
@@ -134,21 +111,13 @@ export function TaskForm() {
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => setValue({ task: undefined, isOpen: open })}
-    >
+    <Dialog open={isOpen} onOpenChange={(open) => setValue({ task: undefined, isOpen: open })}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {task?.id !== undefined ? "Update" : "Create"} Task
-          </DialogTitle>
+          <DialogTitle>{task?.id !== undefined ? "Update" : "Create"} Task</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="title"
@@ -181,10 +150,7 @@ export function TaskForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Board</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value?.toString()}
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
@@ -219,8 +185,7 @@ export function TaskForm() {
                   });
                 }}
                 variant={"destructive"}
-                className="w-fit"
-              >
+                className="w-fit">
                 Delete
               </Button>
             </div>

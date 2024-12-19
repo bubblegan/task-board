@@ -1,25 +1,24 @@
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
 import { useMemo } from "react";
-import { Task, TaskCard } from "./task-card";
-import { cva } from "class-variance-authority";
-import { Card, CardContent, CardHeader } from "./ui/card";
-import { Button } from "./ui/button";
-import { ArrowDownWideNarrow, Grip, Plus } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area";
-import { useAtom } from "jotai";
-import { BoardFormAtom } from "./board-form";
-import { TaskFormAtom } from "./task-form";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { sortBoardApi } from "@/lib/query-fn";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { cva } from "class-variance-authority";
+import { useAtom } from "jotai";
+import { ArrowDownWideNarrow, Grip, Plus } from "lucide-react";
+import { BoardFormAtom } from "./board-form";
+import { Task, TaskCard } from "./task-card";
+import { TaskFormAtom } from "./task-form";
 
 export interface Column {
   id: string;
@@ -51,14 +50,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
   const [, setTaskFormValue] = useAtom(TaskFormAtom);
   const { toast } = useToast();
 
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id: column.id,
     data: {
       type: "Column",
@@ -103,15 +95,13 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
       style={style}
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
-      })}
-    >
+      })}>
       <CardHeader className="p-2 font-semibold border-b-2 flex flex-row justify-between items-center">
         <Button
           variant={"ghost"}
           {...attributes}
           {...listeners}
-          className=" p-1 text-primary/50 h-auto cursor-grab"
-        >
+          className=" p-1 text-primary/50 h-auto cursor-grab">
           <span className="sr-only">{`Move column: ${column.title}`}</span>
           <Grip />
         </Button>
@@ -122,8 +112,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
               board: { id: column.boardId, title: column.title },
             })
           }
-          className="cursor-pointer"
-        >
+          className="cursor-pointer">
           {column.title}
         </p>
         <div className="flex flex-row">
@@ -135,8 +124,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
               });
             }}
             variant={"ghost"}
-            size="icon"
-          >
+            size="icon">
             <Plus />
           </Button>
           <DropdownMenu>
@@ -153,8 +141,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                   });
                 }}
                 variant={"ghost"}
-                size="icon"
-              >
+                size="icon">
                 <ArrowDownWideNarrow />
               </Button>
             </DropdownMenuTrigger>
@@ -166,8 +153,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                     dir: "asc",
                     boardId: column.boardId,
                   })
-                }
-              >
+                }>
                 Title Ascending
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -177,8 +163,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                     dir: "desc",
                     boardId: column.boardId,
                   })
-                }
-              >
+                }>
                 Title Descending
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -188,8 +173,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                     dir: "asc",
                     boardId: column.boardId,
                   })
-                }
-              >
+                }>
                 Created At Ascending
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -199,8 +183,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                     dir: "desc",
                     boardId: column.boardId,
                   })
-                }
-              >
+                }>
                 Created At Descending
               </DropdownMenuItem>
             </DropdownMenuContent>

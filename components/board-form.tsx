@@ -1,29 +1,17 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { createBoardApi, deleteBoardApi, updateBoardApi } from "@/lib/query-fn";
+import { BoardInput, boardSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { z } from "zod";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
-import { BoardInput, boardSchema } from "@/lib/types";
-import { createBoardApi, deleteBoardApi, updateBoardApi } from "@/lib/query-fn";
 
 export const BoardFormAtom = atom<{
   isOpen: boolean;
@@ -99,19 +87,13 @@ export function BoardForm() {
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => setValue({ board: undefined, isOpen: open })}
-    >
+    <Dialog open={isOpen} onOpenChange={(open) => setValue({ board: undefined, isOpen: open })}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{board ? "Update" : "Create"} Board</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="title"
@@ -135,8 +117,7 @@ export function BoardForm() {
                   setConfirmationDialog({
                     isOpen: true,
                     title: "Delete board",
-                    message:
-                      "Deleting this board will delete all its task as well.",
+                    message: "Deleting this board will delete all its task as well.",
                     onConfirm: () => {
                       if (board?.id !== undefined) {
                         deleteBoard.mutate({ id: board?.id });
@@ -145,8 +126,7 @@ export function BoardForm() {
                   });
                 }}
                 variant={"destructive"}
-                className="w-fit"
-              >
+                className="w-fit">
                 Delete
               </Button>
             </div>
