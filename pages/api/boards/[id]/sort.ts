@@ -9,11 +9,11 @@ export default async function handler(
 ) {
   if (req.method === "PATCH") {
     const { id } = req.query;
-    const { order: orderBody, dir } = req.body;
+    const { order, dir } = req.body;
     try {
-      if (orderBody === "title" || orderBody === "date") {
+      if (order === "title" || order === "createdAt") {
         const tasks = await prisma.task.findMany({
-          orderBy: { [orderBody]: dir },
+          orderBy: { [order]: dir },
           where: { boardId: Number(id) },
         });
         const updates = tasks.map((task, index) =>

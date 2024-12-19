@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { BoardContainer } from "./board-container";
 import {
   DndContext,
@@ -17,8 +17,9 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { type Task, TaskCard } from "./task-card";
 import { Active, DataRef, Over } from "@dnd-kit/core";
 import { TaskDragData } from "./task-card";
-import { fetchBoardData } from "@/lib/query-fn";
+import { fetchBoardData, moveBoardApi, moveTaskApi } from "@/lib/query-fn";
 import { BoardColumn, Column, ColumnDragData } from "./board-column";
+import { useToast } from "@/hooks/use-toast";
 
 type DraggableData = ColumnDragData | TaskDragData;
 
@@ -46,14 +47,33 @@ export function BoardList() {
     queryFn: fetchBoardData,
   });
 
+  const { toast } = useToast();
+
   // get list from API
   const [columns, setColumns] = useState<Column[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [showOverlay, setShowOverlay] = useState(false);
-
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+
+  const moveTask = useMutation({
+    mutationFn: moveTaskApi,
+    onSuccess: () => {
+      toast({
+        description: "Task moved",
+      });
+    },
+  });
+
+  const moveBoard = useMutation({
+    mutationFn: moveBoardApi,
+    onSuccess: () => {
+      toast({
+        description: "Board moved",
+      });
+    },
+  });
 
   useEffect(() => {
     const taskList: Task[] = [];
@@ -123,23 +143,18 @@ export function BoardList() {
     const isTaskColumn = activeData?.type === "Task";
 
     if (isTaskColumn) {
-      const finalPos = activeData?.sortable.index;
-      const taskId = activeData?.task.taskId;
       const board_id = columns.find(
         (col) => col.id === activeData?.task.columnId
       )?.boardId;
 
-      const taskResponse = await fetch(`/api/tasks/${taskId}/move`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ boardId: board_id, toPos: finalPos }),
-      });
-
-      if (taskResponse.ok) {
-        console.log("Task moved successfully");
+      if (board_id !== undefined) {
+        moveTask.mutate({
+          taskId: activeData?.task.taskId,
+          boardId: board_id,
+          toPos: activeData?.sortable.index,
+        });
       }
+      return;
     }
 
     if (activeId === overId) return;
@@ -156,17 +171,13 @@ export function BoardList() {
 
     setColumns(movedColumns);
 
-    const boardResponse = await fetch(`/api/boards/${boardId}/move`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ fromPos, toPos }),
-    });
-
-    if (boardResponse.ok) {
-      console.log("Column moved successfully");
+    if (boardId !== undefined) {
+      moveBoard.mutate({
+        boardId: boardId,
+        toPos: toPos,
+      });
     }
+    return;
   }
 
   function onDragOver(event: DragOverEvent) {
@@ -188,7 +199,6 @@ export function BoardList() {
 
     if (!isActiveATask) return;
 
-    // Im dropping a Task over another Task
     if (isActiveATask && isOverATask) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
@@ -210,7 +220,6 @@ export function BoardList() {
 
     const isOverAColumn = overData?.type === "Column";
 
-    // Im dropping a Task over a column
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);

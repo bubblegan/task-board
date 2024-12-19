@@ -6,7 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,16 +22,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
-import { boardSchema } from "@/lib/types";
-
-type BoardFormInput = {
-  title: string;
-  id?: number;
-};
+import { BoardInput, boardSchema } from "@/lib/types";
+import { createBoardApi, deleteBoardApi, updateBoardApi } from "@/lib/query-fn";
 
 export const BoardFormAtom = atom<{
   isOpen: boolean;
-  board?: BoardFormInput;
+  board?: BoardInput;
 }>({
   isOpen: false,
   board: undefined,
@@ -49,15 +52,7 @@ export function BoardForm() {
   }, [board, form]);
 
   const createBoard = useMutation({
-    mutationFn: (data: BoardFormInput) => {
-      return fetch("/api/boards", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: createBoardApi,
     onSuccess: () => {
       toast({
         description: "Board created successfully",
@@ -68,15 +63,7 @@ export function BoardForm() {
   });
 
   const updateBoard = useMutation({
-    mutationFn: (data: BoardFormInput) => {
-      return fetch(`/api/boards/${data.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: updateBoardApi,
     onSuccess: () => {
       toast({
         description: "Board updated successfully",
@@ -87,15 +74,7 @@ export function BoardForm() {
   });
 
   const deleteBoard = useMutation({
-    mutationFn: (data: { id: number }) => {
-      return fetch(`/api/boards/${data.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: deleteBoardApi,
     onSuccess: () => {
       toast({
         description: "Board deleted successfully",
@@ -106,15 +85,15 @@ export function BoardForm() {
     },
   });
 
-  const onSubmit: SubmitHandler<BoardFormInput> = (data) => {
-    if (board) {
+  const onSubmit: SubmitHandler<BoardInput> = (data) => {
+    if (board && board?.id !== undefined) {
       updateBoard.mutate({
-        title: data.title.toLocaleLowerCase(),
+        title: data.title,
         id: board.id,
       });
     } else {
       createBoard.mutate({
-        title: data.title.toLocaleLowerCase(),
+        title: data.title,
       });
     }
   };
@@ -133,15 +112,19 @@ export function BoardForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <div className="flex flex-col gap-1">
-              <label htmlFor="title" className="text-primary">
-                Title
-              </label>
-              <Input
-                className="mt-1 text-primary"
-                {...form.register("title")}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="board title here" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex w-full flex-row-reverse gap-2">
               <Button className="w-fit" type="submit">
                 Submit
@@ -155,7 +138,9 @@ export function BoardForm() {
                     message:
                       "Deleting this board will delete all its task as well.",
                     onConfirm: () => {
-                      deleteBoard.mutate({ id: Number(board?.id) });
+                      if (board?.id !== undefined) {
+                        deleteBoard.mutate({ id: board?.id });
+                      }
                     },
                   });
                 }}

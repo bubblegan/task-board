@@ -24,22 +24,23 @@ import {
 } from "@/components/ui/select";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchBoardData } from "@/lib/query-fn";
+import {
+  createTaskApi,
+  deleteTaskApi,
+  fetchBoardData,
+  updateTaskApi,
+} from "@/lib/query-fn";
 import { useEffect, useMemo } from "react";
 import { atom, useAtom } from "jotai";
 import { toast } from "@/hooks/use-toast";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
-
-type TaskFormInput = {
-  id?: number;
-  title?: string;
-  description?: string;
-  boardId?: number;
-};
+import { z } from "zod";
+import { TaskInput, taskSchema } from "@/lib/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const TaskFormAtom = atom<{
   isOpen: boolean;
-  task?: TaskFormInput;
+  task?: TaskInput;
 }>({
   isOpen: false,
   task: undefined,
@@ -53,7 +54,9 @@ export function TaskForm() {
 
   const { isOpen, task } = value;
 
-  const form = useForm<TaskFormInput>();
+  const form = useForm<z.infer<typeof taskSchema>>({
+    resolver: zodResolver(taskSchema),
+  });
 
   useEffect(() => {
     form.reset({
@@ -80,15 +83,7 @@ export function TaskForm() {
   }, [data]);
 
   const createTask = useMutation({
-    mutationFn: (data: TaskFormInput) => {
-      return fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: createTaskApi,
     onSuccess: () => {
       toast({
         description: "Task created successfully",
@@ -99,15 +94,7 @@ export function TaskForm() {
   });
 
   const updateTask = useMutation({
-    mutationFn: (data: TaskFormInput) => {
-      return fetch(`/api/tasks/${data.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: updateTaskApi,
     onSuccess: () => {
       toast({
         description: "Task updated successfully",
@@ -118,15 +105,7 @@ export function TaskForm() {
   });
 
   const deleteTask = useMutation({
-    mutationFn: (data: { id: number }) => {
-      return fetch(`/api/tasks/${data.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: deleteTaskApi,
     onSuccess: () => {
       toast({
         description: "Task delete successfully",
@@ -137,7 +116,7 @@ export function TaskForm() {
     },
   });
 
-  const onSubmit: SubmitHandler<TaskFormInput> = (data) => {
+  const onSubmit: SubmitHandler<TaskInput> = (data) => {
     if (task?.id) {
       updateTask.mutate({
         title: data.title,
@@ -161,7 +140,9 @@ export function TaskForm() {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{task?.id ? "Update" : "Create"} Task</DialogTitle>
+          <DialogTitle>
+            {task?.id !== undefined ? "Update" : "Create"} Task
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form

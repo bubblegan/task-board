@@ -9,7 +9,18 @@ export default async function handler(
 ) {
   if (req.method === "PATCH") {
     const { id } = req.query;
-    const { toPos, fromPos } = req.body;
+    const { toPos } = req.body;
+
+    const board = await prisma.board.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!board) {
+      return res.status(404).json({ error: "Board not found" });
+    }
+
+    const fromPos = board?.position;
+
     try {
       const isMovingDown = toPos > fromPos;
       await prisma.$transaction(async (tx) => {

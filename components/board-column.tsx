@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { sortBoardApi } from "@/lib/query-fn";
 
 export interface Column {
   id: string;
@@ -87,15 +88,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
   );
 
   const sortBoard = useMutation({
-    mutationFn: (data: { order: "title" | "date"; dir: "asc" | "desc" }) => {
-      return fetch(`/api/boards/${column.boardId}/sort`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    },
+    mutationFn: sortBoardApi,
     onSuccess: () => {
       toast({
         description: "Board sorted successfully",
@@ -138,7 +131,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
             onClick={() => {
               setTaskFormValue({
                 isOpen: true,
-                task: { boardId: column.boardId },
+                task: { boardId: column.boardId, title: "", description: "" },
               });
             }}
             variant={"ghost"}
@@ -152,7 +145,11 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
                 onClick={() => {
                   setTaskFormValue({
                     isOpen: true,
-                    task: { boardId: column.boardId },
+                    task: {
+                      boardId: column.boardId,
+                      title: "",
+                      description: "",
+                    },
                   });
                 }}
                 variant={"ghost"}
@@ -163,16 +160,48 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={() => sortBoard.mutate({ order: "title", dir: "asc" })}
+                onClick={() =>
+                  sortBoard.mutate({
+                    order: "title",
+                    dir: "asc",
+                    boardId: column.boardId,
+                  })
+                }
               >
                 Title Ascending
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
-                  sortBoard.mutate({ order: "title", dir: "desc" })
+                  sortBoard.mutate({
+                    order: "title",
+                    dir: "desc",
+                    boardId: column.boardId,
+                  })
                 }
               >
                 Title Descending
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  sortBoard.mutate({
+                    order: "createdAt",
+                    dir: "asc",
+                    boardId: column.boardId,
+                  })
+                }
+              >
+                Created At Ascending
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  sortBoard.mutate({
+                    order: "createdAt",
+                    dir: "desc",
+                    boardId: column.boardId,
+                  })
+                }
+              >
+                Created At Descending
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

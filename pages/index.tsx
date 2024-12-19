@@ -16,13 +16,13 @@ export default function Home() {
     >
       <div className="flex flex-row gap-2">
         <Button
-          onClick={() => setBoardFormValue({ isOpen: true })}
+          onClick={() => setBoardFormValue({ isOpen: true, board: undefined })}
           className="btn-primary"
         >
           Create Board
         </Button>
         <Button
-          onClick={() => setTaskFormValue({ isOpen: true })}
+          onClick={() => setTaskFormValue({ isOpen: true, task: undefined })}
           className="btn-primary"
         >
           Create Task

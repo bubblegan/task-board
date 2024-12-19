@@ -40,8 +40,7 @@ export default async function handler(
       });
       res.status(201).json(newBoard);
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Error creating board" });
+      res.status(500).json({ error, message: "Error creating board" });
     }
   }
 }
