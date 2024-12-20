@@ -36,6 +36,13 @@ export const TaskFormAtom = atom<{
   task: undefined,
 });
 
+const defaultFormValues = {
+  title: "",
+  description: "",
+  boardId: undefined,
+  dueDate: undefined,
+};
+
 export function TaskForm() {
   const [value, setValue] = useAtom(TaskFormAtom);
   const [, setConfirmationDialog] = useAtom(ConfirmationDialogAtom);
@@ -46,12 +53,7 @@ export function TaskForm() {
 
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      boardId: undefined,
-      dueDate: undefined,
-    },
+    defaultValues: defaultFormValues,
   });
 
   const { data } = useQuery({
@@ -86,6 +88,8 @@ export function TaskForm() {
         dueDate: task?.dueDate,
         id: task?.id,
       });
+    } else {
+      form.setValue("dueDate", undefined);
     }
   }, [task, form, boardList]);
 
@@ -96,6 +100,7 @@ export function TaskForm() {
         description: "Task created successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
+      form.reset(defaultFormValues);
       setValue({ task: undefined, isOpen: false });
     },
     onError: () => {
@@ -112,6 +117,7 @@ export function TaskForm() {
         description: "Task updated successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
+      form.reset(defaultFormValues);
       setValue({ task: undefined, isOpen: false });
     },
     onError: () => {
@@ -207,7 +213,9 @@ export function TaskForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Board</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                  <Select
+                    onValueChange={(val) => field.onChange(Number(val))}
+                    defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
