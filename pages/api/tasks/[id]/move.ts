@@ -1,11 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { moveTaskSchema, taskIdSchema } from "@/lib/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { id } = req.query;
+  const idValidation = taskIdSchema.safeParse(id);
+  if (idValidation.error) {
+    return res.status(404).json({ error: "Task not found)" });
+  }
+  const taskId = idValidation.data;
+
   if (req.method === "PATCH") {
-    const { id } = req.query;
-    const { boardId, toPos } = req.body;
-    const taskId = Number(id);
+    const bodyValidation = moveTaskSchema.safeParse(req.body);
+
+    if (!bodyValidation.success) {
+      return res.status(500).json({ errors: bodyValidation.error.errors });
+    }
+
+    const { toPos, boardId } = bodyValidation.data;
 
     const currentTask = await prisma.task.findUnique({
       where: { id: taskId },
@@ -103,4 +115,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: "Error creating board" });
     }
   }
+
+  res.status(405).json({ error: "Method not allowed" });
 }

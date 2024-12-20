@@ -1,9 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { boardIdSchema, boardSchema } from "@/lib/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-  const boardId = Number(id);
+
+  const idValidation = boardIdSchema.safeParse(id);
+  if (idValidation.error) {
+    return res.status(404).json({ error: "Board not found)" });
+  }
+  const boardId = idValidation.data;
 
   if (req.method === "DELETE") {
     const currentBoard = await prisma.board.findUnique({
@@ -41,10 +47,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "PATCH") {
+    const validation = boardSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(500).json({ errors: validation.error.errors });
+    }
+    const { title } = validation.data;
+
     try {
       await prisma.board.update({
         data: {
-          title: req.body.title,
+          title,
         },
         where: { id: boardId },
       });

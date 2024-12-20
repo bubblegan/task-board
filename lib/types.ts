@@ -31,5 +31,27 @@ export const taskSchema = z.object({
   id: z.number().optional(),
 });
 
+export const moveTaskSchema = z.object({
+  boardId: z.number(),
+  toPos: z.number(),
+});
+
+export const moveBoardSchema = z.object({
+  toPos: z.number(),
+});
+
+export const sortBoardSchema = z.object({
+  boardId: z.number(),
+  toPos: z.number(),
+});
+
+export const orderSchema = z.object({
+  order: z.enum(["title", "createdAt"]),
+  dir: z.enum(["asc", "desc"]),
+});
+
+export const taskIdSchema = z.coerce.number();
+export const boardIdSchema = z.coerce.number();
+
 export type TaskInput = z.infer<typeof taskSchema>;
 export type BoardInput = z.infer<typeof boardSchema>;

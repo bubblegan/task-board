@@ -1,9 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { taskIdSchema, taskSchema } from "@/lib/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-  const taskId = Number(id);
+  const idValidation = taskIdSchema.safeParse(id);
+
+  if (idValidation.error) {
+    return res.status(404).json({ error: "Task not found)" });
+  }
+
+  const taskId = idValidation.data;
 
   if (req.method === "DELETE") {
     const currentTask = await prisma.task.findUnique({
@@ -52,8 +59,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "Task not found)" });
       }
 
+      const validation = taskSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(500).json({ errors: validation.error.errors });
+      }
+      const { title, description, boardId } = validation.data;
+
       // board change move position
-      if (req.body.boardId !== currentTask.boardId) {
+      if (boardId !== currentTask.boardId) {
         await prisma.$transaction(async (tx) => {
           // fromPosition and above all decrease by 1
           await tx.task.updateMany({
@@ -71,14 +84,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
 
           const boardCount = await prisma.board.count({
-            where: { id: req.body.boardId },
+            where: { id: boardId },
           });
 
           await prisma.task.update({
             data: {
-              title: req.body.title,
-              boardId: req.body.boardId,
-              description: req.body.description,
+              title,
+              boardId,
+              description,
               position: boardCount,
             },
             where: { id: taskId },
@@ -87,9 +100,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         await prisma.task.update({
           data: {
-            title: req.body.title,
-            boardId: req.body.boardId,
-            description: req.body.description,
+            title,
+            boardId,
+            description,
           },
           where: { id: taskId },
         });
@@ -100,4 +113,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ message: "Error deleting board", error });
     }
   }
+
+  res.status(405).json({ error: "Method not allowed" });
 }

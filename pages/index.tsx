@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { BoardForm, BoardFormAtom } from "@/components/board-form";
 import { BoardList } from "@/components/board-list";
 import { ConfirmationDialog } from "@/components/confirmation-dialog";
@@ -19,28 +20,34 @@ export default function Home() {
   });
 
   return (
-    <div className={`min-h-screen md:p-20 p-6 gap-8 flex flex-col`}>
-      <div className="flex justify-between w-full flex-row">
-        <div className="flex flex-row gap-2">
-          <Button
-            onClick={() => setBoardFormValue({ isOpen: true, board: undefined })}
-            className="btn-primary">
-            Create Board
-          </Button>
-          <Button
-            disabled={!boardData || boardData?.length === 0}
-            onClick={() => setTaskFormValue({ isOpen: true, task: undefined })}
-            className="btn-primary">
-            Create Task
-          </Button>
+    <>
+      <Head>
+        <title>Task Board</title>
+        <meta name="description" content="This a task board page." />
+      </Head>
+      <div className={`min-h-screen md:p-20 p-6 gap-8 flex flex-col`}>
+        <div className="flex justify-between w-full flex-row">
+          <div className="flex flex-row gap-2">
+            <Button
+              onClick={() => setBoardFormValue({ isOpen: true, board: undefined })}
+              className="btn-primary">
+              Create Board
+            </Button>
+            <Button
+              disabled={!boardData || boardData?.length === 0}
+              onClick={() => setTaskFormValue({ isOpen: true, task: undefined })}
+              className="btn-primary">
+              Create Task
+            </Button>
+          </div>
+          <ThemeSelect />
         </div>
-        <ThemeSelect />
+        <BoardList />
+        <BoardForm />
+        <ConfirmationDialog />
+        <TaskForm />
+        <Toaster />
       </div>
-      <BoardList />
-      <BoardForm />
-      <ConfirmationDialog />
-      <TaskForm />
-      <Toaster />
-    </div>
+    </>
   );
 }
