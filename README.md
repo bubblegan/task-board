@@ -43,6 +43,10 @@ To run the application in development mode locally, ensure the `DATABASE_URL` is
 
 4. Start the development server and navigate to [http://localhost:3000](http://localhost:3000).
 
+   ```bash
+   npm run dev
+   ```
+
 ---
 
 ## Docker
