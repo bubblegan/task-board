@@ -28,6 +28,7 @@ export const taskSchema = z.object({
     .min(1, { message: "please fill in the description" })
     .max(3000, { message: "max length is 3000 characters" }),
   boardId: z.number(),
+  dueDate: z.coerce.date().optional(),
   id: z.number().optional(),
 });
 
@@ -46,7 +47,7 @@ export const sortBoardSchema = z.object({
 });
 
 export const orderSchema = z.object({
-  order: z.enum(["title", "createdAt"]),
+  order: z.enum(["title", "dueDate"]),
   dir: z.enum(["asc", "desc"]),
 });
 

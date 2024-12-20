@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!validation.success) {
       return res.status(400).json({ errors: validation.error.errors });
     }
-    const { title, description, boardId } = validation.data;
+    const { title, description, boardId, dueDate } = validation.data;
 
     try {
       const totalOnBoard = await prisma.task.count({
@@ -17,17 +17,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
 
-      const newBoard = await prisma.task.create({
+      const task = await prisma.task.create({
         data: {
           title,
           description,
           userId: 1,
           boardId,
+          dueDate,
           position: totalOnBoard,
         },
       });
 
-      res.status(201).json(newBoard);
+      res.status(201).json(task);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Error creating task" });

@@ -1,16 +1,29 @@
 import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { createTaskApi, deleteTaskApi, fetchBoardData, updateTaskApi } from "@/lib/query-fn";
 import { TaskInput, taskSchema } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { atom, useAtom } from "jotai";
+import { CalendarIcon } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
@@ -35,15 +48,6 @@ export function TaskForm() {
     resolver: zodResolver(taskSchema),
   });
 
-  useEffect(() => {
-    form.reset({
-      title: task?.title,
-      description: task?.description,
-      boardId: task?.boardId,
-      id: task?.id,
-    });
-  }, [task, form]);
-
   const { data } = useQuery({
     queryKey: ["boardData"],
     queryFn: fetchBoardData,
@@ -58,6 +62,16 @@ export function TaskForm() {
       };
     });
   }, [data]);
+
+  useEffect(() => {
+    form.reset({
+      title: task?.title,
+      description: task?.description,
+      boardId: task?.boardId || boardList[0]?.id,
+      dueDate: task?.dueDate,
+      id: task?.id,
+    });
+  }, [task, form, boardList]);
 
   const createTask = useMutation({
     mutationFn: createTaskApi,
@@ -114,12 +128,14 @@ export function TaskForm() {
         title: data.title,
         description: data.description,
         boardId: Number(data.boardId),
+        dueDate: data.dueDate,
         id: data.id,
       });
     } else {
       createTask.mutate({
         title: data.title,
         description: data.description,
+        dueDate: data.dueDate,
         boardId: Number(data.boardId),
       });
     }
@@ -179,6 +195,35 @@ export function TaskForm() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Due Date: </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>This field is optional.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

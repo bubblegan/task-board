@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { order, dir } = bodyValidation.data;
 
     try {
-      if (order === "title" || order === "createdAt") {
+      if (order === "title" || order === "dueDate") {
         const tasks = await prisma.task.findMany({
           orderBy: { [order]: dir },
           where: { boardId },

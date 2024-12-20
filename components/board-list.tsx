@@ -16,6 +16,7 @@ import {
 import { Active, DataRef, Over } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { createPortal } from "react-dom";
 import { BoardColumn, Column, ColumnDragData } from "./board-column";
 import { BoardContainer } from "./board-container";
@@ -105,6 +106,7 @@ export function BoardList() {
             boardId: task.boardId,
             title: task.title,
             description: task.description,
+            dueDate: task.dueDate ? format(new Date(task.dueDate), "dd MMM yyyy") : "",
           });
         });
       });

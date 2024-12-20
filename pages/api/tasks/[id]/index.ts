@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!validation.success) {
         return res.status(500).json({ errors: validation.error.errors });
       }
-      const { title, description, boardId } = validation.data;
+      const { title, description, boardId, dueDate } = validation.data;
 
       // board change move position
       if (boardId !== currentTask.boardId) {
@@ -92,6 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               title,
               boardId,
               description,
+              dueDate,
               position: boardCount,
             },
             where: { id: taskId },
@@ -103,6 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             title,
             boardId,
             description,
+            dueDate,
           },
           where: { id: taskId },
         });

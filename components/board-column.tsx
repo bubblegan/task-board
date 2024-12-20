@@ -171,22 +171,22 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
               <DropdownMenuItem
                 onClick={() =>
                   sortBoard.mutate({
-                    order: "createdAt",
+                    order: "dueDate",
                     dir: "asc",
                     boardId: column.boardId,
                   })
                 }>
-                Created At Ascending
+                Due Date Ascending
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
                   sortBoard.mutate({
-                    order: "createdAt",
+                    order: "dueDate",
                     dir: "desc",
                     boardId: column.boardId,
                   })
                 }>
-                Created At Descending
+                Due Date Descending
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

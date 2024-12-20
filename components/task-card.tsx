@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { truncateText } from "@/lib/truncate-text";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -15,6 +15,7 @@ export interface Task {
   description: string;
   taskId: number;
   boardId: number;
+  dueDate: string;
 }
 
 interface TaskCardProps {
@@ -77,13 +78,20 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       })}>
       <CardHeader className="px-3 py-3 justify-between flex flex-row items-center border-b-2 border-secondary relative w-full">
         {truncateText(task.title, 30)}
-        <Button {...attributes} {...listeners} variant="ghost" size="icon">
+        <Button {...attributes} {...listeners} className="cursor-grab" variant="ghost" size="icon">
           <Grip />
         </Button>
       </CardHeader>
       <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
         {truncateText(task.description, 500)}
       </CardContent>
+      {task.dueDate && (
+        <CardFooter className="px-3 pb-3 flex flex-row-reverse">
+          <div className="border p-0.5 px-3 rounded">
+            <p className="text-sm">Due on {task.dueDate}</p>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
