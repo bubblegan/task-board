@@ -90,6 +90,9 @@ export function TaskForm() {
       });
     } else {
       form.setValue("dueDate", undefined);
+      if (task?.boardId && !isNaN(task?.boardId)) {
+        form.setValue("boardId", task.boardId);
+      }
     }
   }, [task, form, boardList]);
 
