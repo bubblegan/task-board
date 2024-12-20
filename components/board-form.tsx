@@ -31,12 +31,17 @@ export function BoardForm() {
 
   const form = useForm<z.infer<typeof boardSchema>>({
     resolver: zodResolver(boardSchema),
+    defaultValues: {
+      title: "",
+    },
   });
 
   useEffect(() => {
-    form.reset({
-      title: board?.title,
-    });
+    if (board) {
+      form.reset({
+        title: board?.title,
+      });
+    }
   }, [board, form]);
 
   const createBoard = useMutation({
@@ -63,6 +68,7 @@ export function BoardForm() {
       });
       queryClient.invalidateQueries({ queryKey: ["boardData"] });
       setValue({ board: undefined, isOpen: false });
+      form.reset();
     },
     onError: () => {
       toast({
@@ -102,7 +108,14 @@ export function BoardForm() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => setValue({ board: undefined, isOpen: open })}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        form.reset({
+          title: "",
+        });
+        setValue({ board: undefined, isOpen: open });
+      }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{board ? "Update" : "Create"} Board</DialogTitle>

@@ -46,6 +46,12 @@ export function TaskForm() {
 
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      boardId: undefined,
+      dueDate: undefined,
+    },
   });
 
   const { data } = useQuery({
@@ -63,14 +69,24 @@ export function TaskForm() {
     });
   }, [data]);
 
+  // set default value for board
   useEffect(() => {
-    form.reset({
-      title: task?.title,
-      description: task?.description,
-      boardId: task?.boardId || boardList[0]?.id,
-      dueDate: task?.dueDate,
-      id: task?.id,
-    });
+    if (form.getValues("boardId") === undefined && boardList.length > 0) {
+      form.setValue("boardId", boardList[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boardList]);
+
+  useEffect(() => {
+    if (task?.id !== undefined) {
+      form.reset({
+        title: task?.title,
+        description: task?.description,
+        boardId: task?.boardId || boardList[0]?.id,
+        dueDate: task?.dueDate,
+        id: task?.id,
+      });
+    }
   }, [task, form, boardList]);
 
   const createTask = useMutation({
@@ -142,7 +158,17 @@ export function TaskForm() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => setValue({ task: undefined, isOpen: open })}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        form.reset({
+          title: "",
+          description: "",
+          boardId: boardList[0]?.id,
+          dueDate: undefined,
+        });
+        setValue({ task: undefined, isOpen: open });
+      }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{task?.id !== undefined ? "Update" : "Create"} Task</DialogTitle>
@@ -204,7 +230,7 @@ export function TaskForm() {
               name="dueDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Due Date: </FormLabel>
+                  <FormLabel>Due Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>

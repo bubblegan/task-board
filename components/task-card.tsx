@@ -4,6 +4,7 @@ import { truncateText } from "@/lib/truncate-text";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cva } from "class-variance-authority";
+import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { Grip } from "lucide-react";
 import { TaskFormAtom } from "./task-form";
@@ -15,7 +16,7 @@ export interface Task {
   description: string;
   taskId: number;
   boardId: number;
-  dueDate: string;
+  dueDate: Date | undefined;
 }
 
 interface TaskCardProps {
@@ -70,6 +71,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
             id: task.taskId,
             boardId: task.boardId,
             description: task.description,
+            dueDate: task.dueDate,
           },
         })
       }
@@ -88,7 +90,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       {task.dueDate && (
         <CardFooter className="px-3 pb-3 flex flex-row-reverse">
           <div className="border p-0.5 px-3 rounded">
-            <p className="text-sm">Due on {task.dueDate}</p>
+            <p className="text-sm">Due on {format(task.dueDate, "dd MMM yyyy")}</p>
           </div>
         </CardFooter>
       )}
