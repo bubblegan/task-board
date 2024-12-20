@@ -11,107 +11,117 @@ async function main() {
   });
 
   if (!user) {
-    const result = await prisma.user.create({
+    await prisma.user.create({
       data: {
         id: 1,
         username: "demo",
         password: "demo",
       },
     });
-
-    if (result) {
-      await prisma.board.create({
-        data: {
-          title: "Todo",
-          userId: 1,
-          position: 0,
-          Task: {
-            create: [
-              {
-                title: "Set Up Development Environment",
-                description:
-                  "Install required packages, configure the code editor, and ensure all dependencies are running.",
-                userId: 1,
-                position: 0,
-              },
-              {
-                title: "Design Homepage Layout",
-                description: "Create wireframes and choose a color scheme for the main landing page.",
-                userId: 1,
-                position: 1,
-              },
-              {
-                title: "Task 3",
-                description:
-                  "Integrate sign-up, login, and logout functionality using a secure authentication system.",
-                userId: 1,
-                position: 2,
-              },
-            ],
-          },
-        },
-      });
-
-      await prisma.board.create({
-        data: {
-          title: "In Progress",
-          userId: 1,
-          position: 1,
-          Task: {
-            create: [
-              {
-                title: "Optimize Database Queries",
-                description:
-                  "Review current queries, add necessary indexes, and improve performance to reduce load times.",
-                userId: 1,
-                position: 0,
-              },
-              {
-                title: "Write Unit Tests for API Endpoints",
-                description:
-                  "Add test coverage for all REST endpoints, ensuring reliability and correct behavior",
-                userId: 1,
-                position: 1,
-              },
-            ],
-          },
-        },
-      });
-
-      await prisma.board.create({
-        data: {
-          title: "Done",
-          userId: 1,
-          position: 2,
-          Task: {
-            create: [
-              {
-                title: "Create Onboarding Documentation",
-                description:
-                  "Write step-by-step instructions for new team members to quickly get started with the project",
-                userId: 1,
-                position: 0,
-              },
-              {
-                title: "Implement Drag-and-Drop Feature",
-                description:
-                  "Allow users to reorder items interactively using a simple drag-and-drop interface",
-                userId: 1,
-                position: 1,
-              },
-              {
-                title: "Add Dark Mode Support",
-                description:
-                  "Provide a dark theme option and a toggle switch for users to switch between light and dark interfaces",
-                userId: 1,
-                position: 2,
-              },
-            ],
-          },
-        },
-      });
-    }
   }
+
+  // delete the data
+
+  await prisma.task.deleteMany();
+  await prisma.board.deleteMany();
+
+  await prisma.board.create({
+    data: {
+      title: "Todo",
+      userId: 1,
+      position: 0,
+      Task: {
+        create: [
+          {
+            title: "Set Up Development Environment",
+            description:
+              "Install required packages, configure the code editor, and ensure all dependencies are running.",
+            userId: 1,
+            dueDate: new Date("2024-12-31"),
+            position: 0,
+          },
+          {
+            title: "Design Homepage Layout",
+            description: "Create wireframes and choose a color scheme for the main landing page.",
+            userId: 1,
+            dueDate: new Date("2025-01-01"),
+            position: 1,
+          },
+          {
+            title: "Task 3",
+            description:
+              "Integrate sign-up, login, and logout functionality using a secure authentication system.",
+            userId: 1,
+            dueDate: new Date("2025-12-20"),
+            position: 2,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.board.create({
+    data: {
+      title: "In Progress",
+      userId: 1,
+      position: 1,
+      Task: {
+        create: [
+          {
+            title: "Optimize Database Queries",
+            description:
+              "Review current queries, add necessary indexes, and improve performance to reduce load times.",
+            userId: 1,
+            dueDate: new Date("2024-12-30"),
+            position: 0,
+          },
+          {
+            title: "Write Unit Tests for API Endpoints",
+            description:
+              "Add test coverage for all REST endpoints, ensuring reliability and correct behavior",
+            userId: 1,
+            dueDate: new Date("2025-01-18"),
+            position: 1,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.board.create({
+    data: {
+      title: "Done",
+      userId: 1,
+      position: 2,
+      Task: {
+        create: [
+          {
+            title: "Create Onboarding Documentation",
+            description:
+              "Write step-by-step instructions for new team members to quickly get started with the project",
+            userId: 1,
+            dueDate: new Date("2025-01-11"),
+            position: 0,
+          },
+          {
+            title: "Implement Drag-and-Drop Feature",
+            description: "Allow users to reorder items interactively using a simple drag-and-drop interface",
+            userId: 1,
+            dueDate: new Date("2025-01-12"),
+            position: 1,
+          },
+          {
+            title: "Add Dark Mode Support",
+            description:
+              "Provide a dark theme option and a toggle switch for users to switch between light and dark interfaces",
+            userId: 1,
+            dueDate: new Date("2025-01-13"),
+            position: 2,
+          },
+        ],
+      },
+    },
+  });
 }
 
 main()
