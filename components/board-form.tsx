@@ -9,6 +9,7 @@ import { BoardInput, boardSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
+import { Loader2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
@@ -136,7 +137,11 @@ export function BoardForm() {
               )}
             />
             <div className="flex w-full flex-row-reverse gap-2">
-              <Button className="w-fit" type="submit">
+              <Button
+                disabled={createBoard.isPending || updateBoard.isPending}
+                className="w-fit"
+                type="submit">
+                {(createBoard.isPending || updateBoard.isPending) && <Loader2 className="animate-spin" />}{" "}
                 Submit
               </Button>
               <Button

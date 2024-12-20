@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { atom, useAtom } from "jotai";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ConfirmationDialogAtom } from "./confirmation-dialog";
@@ -266,7 +266,8 @@ export function TaskForm() {
               )}
             />
             <div className="flex w-full flex-row-reverse gap-2">
-              <Button className="w-fit" type="submit">
+              <Button disabled={createTask.isPending || updateTask.isPending} className="w-fit" type="submit">
+                {(createTask.isPending || updateTask.isPending) && <Loader2 className="animate-spin" />}{" "}
                 Submit
               </Button>
               <Button
