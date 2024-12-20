@@ -25,7 +25,7 @@ export default function Home() {
         <title>Task Board</title>
         <meta name="description" content="This a task board page." />
       </Head>
-      <div className={`min-h-screen md:p-20 p-6 gap-8 flex flex-col`}>
+      <div className={`min-h-screen md:max-h-screen overflow-hidden md:p-20 p-6 gap-8 flex flex-col`}>
         <div className="flex justify-between w-full flex-row">
           <div className="flex flex-row gap-2">
             <Button
