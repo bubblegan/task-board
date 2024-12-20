@@ -12,6 +12,8 @@ A brief description of your project. Add details about what the project does, it
   - [Docker](#docker)
     - [Prerequisites](#prerequisites-1)
     - [Steps](#steps-1)
+  - [Testing](#testing)
+    - [E2E Test](#e2e-test)
 
 ---
 
@@ -67,6 +69,18 @@ Ensure Docker is installed on your system.
 
    ```bash
    docker-compose exec web npx prisma db seed
+   ```
+
+---
+
+## Testing
+
+### E2E Test
+
+1. Run the following command for E2E test:
+
+   ```bash
+   npm run test:playwright
    ```
 
 ---
