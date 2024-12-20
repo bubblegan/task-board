@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { fetchBoardData, moveBoardApi, moveTaskApi } from "@/lib/query-fn";
 import {
@@ -42,7 +43,7 @@ function hasDraggableData<T extends Active | Over>(
 }
 
 export function BoardList() {
-  const { data: boardData } = useQuery({
+  const { data: boardData, isLoading } = useQuery({
     queryKey: ["boardData"],
     queryFn: fetchBoardData,
   });
@@ -121,7 +122,7 @@ export function BoardList() {
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
-  function onDragStart(event: DragStartEvent) {
+  const onDragStart = (event: DragStartEvent) => {
     if (!hasDraggableData(event.active)) return;
     const data = event.active.data.current;
     if (data?.type === "Column") {
@@ -133,9 +134,9 @@ export function BoardList() {
       setActiveTask(data.task);
       return;
     }
-  }
+  };
 
-  function onDragEnd(event: DragEndEvent) {
+  const onDragEnd = (event: DragEndEvent) => {
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -185,9 +186,9 @@ export function BoardList() {
       });
     }
     return;
-  }
+  };
 
-  function onDragOver(event: DragOverEvent) {
+  const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -234,7 +235,7 @@ export function BoardList() {
         return tasks;
       });
     }
-  }
+  };
 
   return (
     <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragOver={onDragOver}>
@@ -244,6 +245,7 @@ export function BoardList() {
             <BoardColumn key={col.id} column={col} tasks={tasks.filter((task) => task.columnId === col.id)} />
           ))}
         </SortableContext>
+        {isLoading && <Skeleton className="w-[300px] h-[70vh]" />}
       </BoardContainer>
       {showOverlay &&
         "document" in window &&
