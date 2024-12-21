@@ -111,8 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       res.status(201).json({ message: "Task moved successfully" });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Error creating board" });
+      res.status(500).json({ message: "Error creating board", error });
     }
   }
 
