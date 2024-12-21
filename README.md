@@ -80,7 +80,7 @@ Ensure Docker is installed on your system.
 1. Run the following command for E2E test:
 
    ```bash
-   npm run test:playwright
+   npm run build-and-test
    ```
 
 ---

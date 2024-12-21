@@ -104,7 +104,6 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
       })}>
       <CardHeader className="p-2 font-semibold border-b-2 flex flex-row justify-between items-center">
         <Button variant={"ghost"} {...attributes} {...listeners} className="cursor-grab" size={"icon"}>
-          <span className="sr-only">{`Move column: ${column.title}`}</span>
           <Grip />
         </Button>
         <span

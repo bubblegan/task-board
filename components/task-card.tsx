@@ -77,7 +77,8 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       }
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
-      })}>
+      })}
+      data-testid="task-card">
       <CardHeader className="px-3 py-3 justify-between flex flex-row items-center border-b-2 border-secondary relative w-full">
         {truncateText(task.title, 30)}
         <Button {...attributes} {...listeners} className="cursor-grab" variant="ghost" size="icon">
