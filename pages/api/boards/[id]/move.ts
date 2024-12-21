@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const bodyValidation = moveBoardSchema.safeParse(req.body);
 
     if (!bodyValidation.success) {
-      return res.status(500).json({ errors: bodyValidation.error.errors });
+      return res.status(500).json({ message: "Validation error", error: bodyValidation.error.errors });
     }
 
     const { toPos } = bodyValidation.data;
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!board) {
-      return res.status(404).json({ error: "Board not found" });
+      return res.status(404).json({ message: "Board not found" });
     }
 
     const fromPos = board?.position;
@@ -68,9 +68,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       });
 
-      res.status(201).json({ message: "Board moved successfully" });
+      return res.status(201).json({ message: "Board moved successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error creating board", error });
+      return res.status(500).json({ message: "Error creating board", error });
     }
   }
+
+  return res.status(405).json({ message: "Method not allowed" });
 }

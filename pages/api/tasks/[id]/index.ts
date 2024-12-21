@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const idValidation = taskIdSchema.safeParse(id);
 
   if (idValidation.error) {
-    return res.status(404).json({ error: "Task not found)" });
+    return res.status(404).json({ message: "Task not found)" });
   }
 
   const taskId = idValidation.data;
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!currentTask) {
-      return res.status(404).json({ error: "Task not found)" });
+      return res.status(404).json({ message: "Task not found)" });
     }
 
     try {
@@ -42,9 +42,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       });
 
-      res.status(201).json({ message: "Task deleted successfully" });
+      return res.status(201).json({ message: "Task deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting task", error });
+      return res.status(500).json({ message: "Error deleting task", error });
     }
   }
 
@@ -109,11 +109,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      res.status(201).json({ message: "Task updated successfully" });
+      return res.status(201).json({ message: "Task updated successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting board", error });
+      return res.status(500).json({ message: "Error deleting board", error });
     }
   }
 
-  res.status(405).json({ error: "Method not allowed" });
+  return res.status(405).json({ message: "Method not allowed" });
 }

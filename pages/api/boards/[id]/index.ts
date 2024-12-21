@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const idValidation = boardIdSchema.safeParse(id);
   if (idValidation.error) {
-    return res.status(404).json({ error: "Board not found)" });
+    return res.status(404).json({ message: "Board not found)" });
   }
   const boardId = idValidation.data;
 
@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!currentBoard) {
-      return res.status(404).json({ error: "Board not found)" });
+      return res.status(404).json({ message: "Board not found)" });
     }
 
     try {
@@ -40,9 +40,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       });
 
-      res.status(201).json({ message: "Board deleted successfully" });
+      return res.status(201).json({ message: "Board deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting board", error });
+      return res.status(500).json({ message: "Error deleting board", error });
     }
   }
 
@@ -61,9 +61,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         where: { id: boardId },
       });
 
-      res.status(201).json({ message: "Board updated successfully" });
+      return res.status(201).json({ message: "Board updated successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting board", error });
+      return res.status(500).json({ message: "Error deleting board", error });
     }
   }
+
+  return res.status(405).json({ message: "Method not allowed" });
 }

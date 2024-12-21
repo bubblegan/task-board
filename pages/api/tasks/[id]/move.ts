@@ -109,11 +109,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
         });
       }
-      res.status(201).json({ message: "Task moved successfully" });
+      return res.status(201).json({ message: "Task moved successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error creating board", error });
+      return res.status(500).json({ message: "Error creating board", error });
     }
   }
 
-  res.status(405).json({ error: "Method not allowed" });
+  return res.status(405).json({ error: "Method not allowed" });
 }

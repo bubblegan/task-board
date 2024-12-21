@@ -17,9 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           position: "asc",
         },
       });
-      res.status(200).json(board);
+      return res.status(200).json(board);
     } catch (error) {
-      res.status(500).json({ error, message: "Error fetching board" });
+      return res.status(500).json({ error, message: "Error fetching board" });
     }
   }
 
@@ -39,9 +39,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           position: totalBoard,
         },
       });
-      res.status(201).json(newBoard);
+      return res.status(201).json(newBoard);
     } catch (error) {
-      res.status(500).json({ error, message: "Error creating board" });
+      return res.status(500).json({ error, message: "Error creating board" });
     }
   }
+
+  return res.status(405).json({ message: "Method not allowed" });
 }
