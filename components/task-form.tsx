@@ -270,22 +270,24 @@ export function TaskForm() {
                 {(createTask.isPending || updateTask.isPending) && <Loader2 className="animate-spin" />}{" "}
                 Submit
               </Button>
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setConfirmationDialog({
-                    isOpen: true,
-                    title: "Delete Board",
-                    message: "Delete this board will affect its task.",
-                    onConfirm: () => {
-                      deleteTask.mutate({ id: Number(task?.id) });
-                    },
-                  });
-                }}
-                variant={"destructive"}
-                className="w-fit">
-                Delete
-              </Button>
+              {task?.id !== undefined && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setConfirmationDialog({
+                      isOpen: true,
+                      title: "Delete Task",
+                      message: "Deleting the current task.",
+                      onConfirm: () => {
+                        deleteTask.mutate({ id: Number(task?.id) });
+                      },
+                    });
+                  }}
+                  variant={"destructive"}
+                  className="w-fit">
+                  Delete
+                </Button>
+              )}
             </div>
           </form>
         </Form>

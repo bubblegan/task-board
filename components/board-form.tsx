@@ -144,24 +144,26 @@ export function BoardForm() {
                 {(createBoard.isPending || updateBoard.isPending) && <Loader2 className="animate-spin" />}{" "}
                 Submit
               </Button>
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setConfirmationDialog({
-                    isOpen: true,
-                    title: "Delete board",
-                    message: "Deleting this board will delete all its task as well.",
-                    onConfirm: () => {
-                      if (board?.id !== undefined) {
-                        deleteBoard.mutate({ id: board?.id });
-                      }
-                    },
-                  });
-                }}
-                variant={"destructive"}
-                className="w-fit">
-                Delete
-              </Button>
+              {board?.id !== undefined && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setConfirmationDialog({
+                      isOpen: true,
+                      title: "Delete board",
+                      message: "Deleting this board will delete all its task as well.",
+                      onConfirm: () => {
+                        if (board?.id !== undefined) {
+                          deleteBoard.mutate({ id: board?.id });
+                        }
+                      },
+                    });
+                  }}
+                  variant={"destructive"}
+                  className="w-fit">
+                  Delete
+                </Button>
+              )}
             </div>
           </form>
         </Form>
